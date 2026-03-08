@@ -1,0 +1,29 @@
+"""Shared pytest fixtures for backend API tests.
+
+Tests in this suite follow the AAA pattern:
+- Arrange: prepare input and preconditions
+- Act: execute one API call
+- Assert: verify response and state
+"""
+
+from copy import deepcopy
+
+import pytest
+from fastapi.testclient import TestClient
+
+from src.app import activities, app
+
+
+@pytest.fixture
+def client() -> TestClient:
+    return TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def reset_activities() -> None:
+    original = deepcopy(activities)
+
+    yield
+
+    activities.clear()
+    activities.update(original)
