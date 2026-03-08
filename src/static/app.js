@@ -123,8 +123,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       );
 
-      const result = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+      let result;
 
+      if (contentType.includes("application/json")) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        result = { message: text, detail: text };
+      }
       if (!response.ok) {
         throw new Error(result.detail || "Failed to unregister participant");
       }
