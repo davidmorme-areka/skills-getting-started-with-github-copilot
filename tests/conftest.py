@@ -10,13 +10,14 @@ from copy import deepcopy
 
 import pytest
 from fastapi.testclient import TestClient
+from typing import Iterator
 
 from src.app import activities, app
 
-
 @pytest.fixture
-def client() -> TestClient:
-    return TestClient(app)
+def client() -> Iterator[TestClient]:
+    with TestClient(app) as client:
+        yield client
 
 
 @pytest.fixture(autouse=True)
