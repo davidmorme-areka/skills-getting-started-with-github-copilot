@@ -23,26 +23,83 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
-        const participantsMarkup = details.participants.length
-          ? `<ul class="participants-list">${details.participants
-              .map(
-                (participant) =>
-                  `<li><span>${participant}</span><button type="button" class="participant-delete" data-activity="${name}" data-email="${participant}" aria-label="Unregister ${participant} from ${name}" title="Unregister participant">x</button></li>`
-              )
-              .join("")}</ul>`
-          : '<p class="participants-empty">No participants yet</p>';
 
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-          <div class="participants-section">
-            <p class="participants-title"><strong>Participants (${details.participants.length}):</strong></p>
-            ${participantsMarkup}
-          </div>
-        `;
+        // Title
+        const titleEl = document.createElement("h4");
+        titleEl.textContent = name;
+        activityCard.appendChild(titleEl);
 
+        // Description
+        const descriptionEl = document.createElement("p");
+        descriptionEl.textContent = details.description;
+        activityCard.appendChild(descriptionEl);
+
+        // Schedule
+        const scheduleEl = document.createElement("p");
+        const scheduleStrong = document.createElement("strong");
+        scheduleStrong.textContent = "Schedule:";
+        scheduleEl.appendChild(scheduleStrong);
+        scheduleEl.appendChild(document.createTextNode(" " + details.schedule));
+        activityCard.appendChild(scheduleEl);
+
+        // Availability
+        const availabilityEl = document.createElement("p");
+        const availabilityStrong = document.createElement("strong");
+        availabilityStrong.textContent = "Availability:";
+        availabilityEl.appendChild(availabilityStrong);
+        availabilityEl.appendChild(
+          document.createTextNode(" " + spotsLeft + " spots left")
+        );
+        activityCard.appendChild(availabilityEl);
+
+        // Participants section
+        const participantsSection = document.createElement("div");
+        participantsSection.className = "participants-section";
+
+        const participantsTitle = document.createElement("p");
+        participantsTitle.className = "participants-title";
+        const participantsTitleStrong = document.createElement("strong");
+        participantsTitleStrong.textContent =
+          "Participants (" + details.participants.length + "):";
+        participantsTitle.appendChild(participantsTitleStrong);
+        participantsSection.appendChild(participantsTitle);
+
+        if (details.participants.length) {
+          const participantsListEl = document.createElement("ul");
+          participantsListEl.className = "participants-list";
+
+          details.participants.forEach((participant) => {
+            const li = document.createElement("li");
+
+            const span = document.createElement("span");
+            span.textContent = participant;
+            li.appendChild(span);
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "participant-delete";
+            button.dataset.activity = name;
+            button.dataset.email = participant;
+            button.setAttribute(
+              "aria-label",
+              "Unregister " + participant + " from " + name
+            );
+            button.title = "Unregister participant";
+            button.textContent = "x";
+
+            li.appendChild(button);
+            participantsListEl.appendChild(li);
+          });
+
+          participantsSection.appendChild(participantsListEl);
+        } else {
+          const emptyParticipants = document.createElement("p");
+          emptyParticipants.className = "participants-empty";
+          emptyParticipants.textContent = "No participants yet";
+          participantsSection.appendChild(emptyParticipants);
+        }
+
+        activityCard.appendChild(participantsSection);
         activitiesList.appendChild(activityCard);
 
         // Add option to select dropdown
